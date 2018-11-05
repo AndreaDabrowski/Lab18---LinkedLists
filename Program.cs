@@ -13,7 +13,7 @@ namespace Lab18
             set; get;//gets and sets properties as it did before (interchangeable order for get and set btw)
         }
         public Node Next { set; get; }
-        public Node Previous { set; get; }//add this one for a doubly linked list!!!!!
+        //public Node Previous { set; get; }//add this one for a doubly linked list!!!!!
         public int Index { set; get; }
 
     }
@@ -24,7 +24,7 @@ namespace Lab18
         public Node Tail { set; get; }
         public int Count { set; get; }
 
-        public void Add(string userInput)
+        public void AddToEnd(string userInput)
         {
             Node newNode = new Node { Next = null, Data = userInput };//calls default constructor, but then sets these values
             if (Count == 0)//adding for only the first node
@@ -35,7 +35,7 @@ namespace Lab18
             }
             else
             {
-                Tail.Previous = Tail;//changes the previous reference for DOUBLY LINKED LISTS!!!!!!!!!!!!!!!!!!!
+                //Tail.Previous = Tail;//changes the previous reference for DOUBLY LINKED LISTS!!!!!!!!!!!!!!!!!!!
                 Tail.Next = newNode;//chance the tail next reference
                 Tail = newNode; //change the tail
                 Count++;
@@ -44,20 +44,58 @@ namespace Lab18
         }
         public bool RemoveAt(int index)
         {
-            LinkedList list = new LinkedList();
+            if (index < 0 || index > Count-1)
+            {
+                Console.WriteLine("index out of range!");
+                return false;
+            }
+            else if (index == 0)//if its the first node, set the head to the next node
+            {
+                Head = GetNode(index+1);
+                Count--;
+                return true;
+            }
+            else if (index == Count - 1)
+            {
+                GetNode(index-1).Next = null;//if its the last node in the list, set the previous node's pointer to null
+                Count--;
+                return true;
+            }
+            else
+            {
+                GetNode(index-1).Next = GetNode(index+1);//if anywhere else, set the previous node's pointer to the next node after the removed
+                Count--;
+                return true;
 
-            Node nextNode = new Node { };
-            index = nextNode.Index;
+            }
+        }
+        public bool AddAt(int index, Node newNode)
+        {
+            
             if (index < 0 || index > Count)
             {
                 Console.WriteLine("index out of range!");
                 return false;
             }
+            else if (index == 0)
+            {
+                newNode.Next = GetNode(index);//if its the first node in the list, set the new node to point at the node set at that current index
+                Head = newNode;//set head to the new node
+                Count++;
+                return true;
+            }
+            else if (index == Count)
+            {
+                newNode.Next = null;//if the new node is placed at the end of the list, have the new node point to null
+                GetNode(index).Next = newNode;//set the previous node to point at the new node
+                Count++;
+                return true;
+            }
             else
             {
-                Head.Previous.Index = index;
-                Head.Next = null;
-                Count--;
+                newNode.Next = GetNode(index);//if the new node is in the middle of the list, set the new node to point at the node who's at that current index
+                GetNode(index-1).Next = newNode;//then set the previous node in the list to point at the new node
+                Count++;
                 return true;
 
             }
@@ -94,11 +132,11 @@ namespace Lab18
         static void Main(string[] args)
         {
             LinkedList myList = new LinkedList();
-            myList.Add("Steve");
-            myList.Add("Mauricio");
-            myList.Add("Evan");
-            myList.Add("dan");
-            myList.Add("Andrea");
+            myList.AddToEnd("Steve");
+            myList.AddToEnd("Mauricio");
+            myList.AddToEnd("Evan");
+            myList.AddToEnd("dan");
+            myList.AddToEnd("Andrea");
 
 
             Console.WriteLine("The items in the Linked List are : ");
@@ -107,14 +145,22 @@ namespace Lab18
             myList.PrintReverse();
             Console.WriteLine();
 
-            Console.WriteLine("Please enter an index of an element to remove from our Linked List: ");
+            Console.WriteLine("Please enter an index of an element to add a new person to our Linked List: ");
+            Node newPerson = new Node();
+            newPerson.Data = "New Person!";
+            bool isAdded = myList.AddAt(int.Parse(Console.ReadLine()), newPerson);
+
+            Console.WriteLine();
+            Console.WriteLine("Our new Linked List is: ");
+            myList.PrintList();
+
+            Console.WriteLine();
+            Console.WriteLine("Please enter an index to remove a person from our Linked List: ");
             bool isRemoved = myList.RemoveAt(int.Parse(Console.ReadLine()));
 
             Console.WriteLine();
-            Console.WriteLine("Our new reversed Linked List is: ");
-            myList.PrintReverse();
-            
-
+            Console.WriteLine("Our new Linked List is: ");
+            myList.PrintList();
             Console.ReadLine();
         }
     }
